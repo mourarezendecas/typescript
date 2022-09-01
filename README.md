@@ -1,5 +1,7 @@
 # <p align="center">Typescipt</p> 
 
+# <p align="center">Motivação e diferenças</p>
+
 Podemos considerar o Typescript como um potencializador da linguagem Javascript. Ele permite que grandes sistemas complexos sejam construídos com essa linguagem sem nenhum empecilho e sem que ela deixe a desejar diante de outras linguagens de back-end, como PHP ou Java.
 
 Uma das grandes vantagens é que você pode usar recursos novos, porque o código vai ser copilado pra versão de JS desejada. 
@@ -254,4 +256,145 @@ Posso usar a seguinte sintaxe caso eu queira inferir que minha função deve ter
 ```ts
 let calculo: (a:number, b:number) => number
 //A variável cálculo sera associada a apenas uma função que aceita 2 numeros como parametro e retorna um number 
+```
+## Objetos e tipos 
+Na construção de objetos, podemos inferir quais os tipos de dados esperados que serão associados aos seus atributos. 
+```ts
+let Usuario: {nome: String, idade: number} = { 
+    nome: 'João',
+    idade: 24
+}
+//No objeto usuário, seu atributo nome está associado a uma variável do tipo String e a idade ao uma variável do tipo number.
+```
+## Colocando em prática
+
+```ts
+//Criando um objeto chamado funcionário
+let funcionario: { 
+    //Informo que o objeto funcionario tem um atributo chamado supervisores do tipo array de String
+    supervisores: string[], 
+    //Informo que o objeto funcionario tem um método chamado baterPonto, que recebe um parâmetro do tipo number chamado horas e nos retorna uma String
+    baterPonto: (horas: number) => String
+} ={
+    //Na construção do objeto, determino que o atributo supervisores recebe 2 Strings
+    supervisores: ['Carlos', 'Simone'],
+    //Na construção do objeto, explicito como que o método pre-determinado irá se comportar dado um certo valor de entrada
+    baterPonto(horario: number): string{
+        if(horario<=8)
+        {
+            return 'normal'
+        }
+        else{
+            return 'fora do horario'
+        }
+    }
+}
+
+//O bloco acima se comporta da seguinte maneira: 
+// let variável:{atributo:tipo_atributo, metodo: (nomedavariavel:tipo_variavael)=>tipo_retorno}
+// O bloco a frente é onde iremos atribuir valores aos atributos e métodos determinados.
+```
+
+## Tipos personalizados com Alias 
+
+Caso quiséssemos criar um novo funcionário com base no código anterior, teríamos que codificar da seguinte maneira: 
+
+```ts
+let funcionario2: { 
+    supervisores: string[], 
+    baterPonto: (horas: number) => String
+} ={
+    supervisores: ['Bia', 'Carlos'],
+    baterPonto(horario: number): string{
+        if(horario<=8)
+        {
+            return 'normal'
+        }
+        else{
+            return 'fora do horario'
+        }
+    }
+}
+```
+
+Eu posso criar um tipo chamado funcionário que tem os mesmos parâmetros utilizados nos casos acima:
+```ts
+type Funcionario ={ 
+    supervisores: string[], 
+    baterPonto: (horas: number) => String
+}
+```
+E então utilizar esse tipo, similarmente ao que fazemos em uma Classe, usando o type como um molde para instanciarmos o objeto. 
+
+## Múltiplos tipos com Union Type 
+
+Dado a seguinte situação em que o mesmo dado pode ser apresentado apresentando diversos tipos: 
+```ts
+var nota = 10
+console.log(`Minha nota é ${nota}`)
+//Saida no console: Minha nota é 10
+var nota = '10'
+console.log(`Minha nota é ${nota}`) 
+//Saida no console: Minha nota é 10
+```
+Podemos descrever a variável nota como ``any``, entretanto pode nos ser fornecido um valor booleano, aonde no nosso contexto não faz sentido, tendo em vista o uso de nossa variável, para isso podemos usar a seguinte notação para determinar quais os tipos de variáveis aceitas: 
+```ts
+var nota: number | String
+```
+Aonde especificamos quais os tipos serão aceitos pela nossa variável
+
+## Checagem do tipo no Runtime 
+Tendo em vista que queremos saber o tipo de um certo valor:
+```ts
+var valor = 30
+```
+Por inferência, o compilador considera que o valor acima é do tipo number mas caso desejamos verificar se a variável valor é de fato do tipo number, temos que fazer o seguinte. 
+```ts
+if(typeof valor=="number")
+{
+    return "É do tipo number"
+}
+else{
+    return typeof number; 
+}
+```
+No nosso caso, como estamos usando o VSCode, a própria IDE e o TSC nos informa a checagem de tipo, ou seja, no RunTime o VSCode faz a checagem de tipo. 
+
+## 0 tipo never 
+Usamos o tipo never, quando queremos dizer explicitamente que a função nunca irá retornar um valor, vejamos um exemplo prático: 
+
+```ts
+function falha(msg: string): never{
+    throw new Error(msg)
+}
+
+const produto = {
+    nome : 'Sabão',
+    preco: -1, 
+    validarProduto(){
+        if(!this.nome || this.nome.length==0)
+        {
+            falha('precisa ter nome')
+        }
+        if(this.preco<=0)
+        {
+            falha('Preço inválido')
+        }
+    }
+}
+```
+<i>No exemplo acima, quando o método validarProduto() ser invocado, será lançado um erro com a mensagem desejada e não será retornado nada, similarmente ao void mas com a diferença que a função falha é uma função explicita que o tipo do retorno não será indefinido. </i>
+
+## Valores opcionais com o tipo Null
+Ao declarar uma variável e implicitar o tipo da mesma, torna-se impossível atribuir o tipo null e isso se torna um problema caso queiramos que o valor da variável seja opcional, segue exemplo: 
+
+```ts
+var alturaEscada = 20
+alturaEscada = null
+//O compilador irá informar um erro, pois a variável não aceitará o valor de null tendo em vista que seu tipo é number.
+```
+Para isto, temos a seguinte delcaração: 
+```ts
+var alturaEscada: Number | Null
+alturaEscada = Null 
 ```
