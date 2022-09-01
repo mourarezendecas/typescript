@@ -1,0 +1,23 @@
+{
+  "name": "typescript",
+  "version": "1.0.0",
+  "description": "Podemos considerar o Typescript como um potencializador da linguagem Javascript. Ele permite que grandes sistemas complexos sejam construídos com essa linguagem sem nenhum empecilho e sem que ela deixe a desejar diante de outras linguagens de back-end, como PHP ou Java.",
+  "main": "index.js",
+  "scripts": {
+    "start":"live-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mourarezendecas/typescript.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mourarezendecas/typescript/issues"
+  },
+  "homepage": "https://github.com/mourarezendecas/typescript#readme",
+  "dependencies": {
+    "live-server": "^1.2.2"
+  }
+}
