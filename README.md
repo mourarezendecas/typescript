@@ -139,7 +139,7 @@ Pois a variável nome já foi atribuida ao tipo String.
 
 Os tipos são inferidos, por mais que no código você não tenha explicitado o tipo da variável, o typescript irá considerar o tipo do valor a qual a variável foi primeiramente **associada na declaração da mesma**. 
 
-## - Tipos de variáveis 
+## <p align="center"> Tipos de variáveis </p>
 ## String
 - Uma parte fundamental da criação de programas em JavaScript para páginas da Web e servidores é trabalhar com dados textuais. Como em outras linguagens, usamos o tipo string para fazer referência a esses tipos de dados textuais. Assim como o JavaScript, o TypeScript também usa aspas duplas ("") ou aspas simples (') para cercar os dados da string.
 ```typescript
@@ -324,7 +324,7 @@ type Funcionario ={
     baterPonto: (horas: number) => String
 }
 ```
-E então utilizar esse tipo, similarmente ao que fazemos em uma Classe, usando o type como um molde para instanciarmos o objeto. 
+E então utilizar esse tipo, similarmente ao que fazemos em uma Classe, **usando a keyword `type`** como um molde para instanciarmos o objeto. 
 
 ## Múltiplos tipos com Union Type 
 
@@ -397,4 +397,280 @@ Para isto, temos a seguinte delcaração:
 ```ts
 var alturaEscada: Number | Null
 alturaEscada = Null 
+```
+<br><br>
+
+# <p align="center">Entendendo o compilador TypeScript</p>
+
+## Compilação "persistente" e o "noEmitOnError" 
+Dado o seguinte cenário: 
+```js
+let canal: String = "Casey Neistat"
+let inscritos: number = 18923718
+canal = inscritos
+console.log(canal)
+```
+Por mais que o código em .ts apresente erro pelo fato da variável canal ser primeiramente associada ao tipo String, o compilador irá apresentar o código em .js normalmente, pois esse erro não existe no javascript. 
+
+Para interromper essa compilação "persistente", adicionamos a seguinte linha no arquivo `tsconfig.json`: 
+```json
+"noEmitOnError": true,
+```
+
+- Essa função infere que por mais que a variável esteja declarada em outro arquivo, o compilador irá considerá-la como uma variável global e não irá admiti-la 
+
+## Alterando a propriedade target (Versão do JS)
+
+Para alterar a versão do JS que o compilador irá converter o código .ts, temos que alterar a propriedade
+```json
+"target": "VERSÃO"
+```
+
+## Debugando com Source Maps 
+Com o source maps, conseguimos ter acesso ao arquivo .ts no browser para facilitar a depuração, pois iremos ver o código fonte que irar gerar o código .js interpretado pelo navegador. 
+
+A motivação para se usar o Source Map, é que ao converter o arquivo .ts para .js, existe um tipo de "uglyfy" do código e pode ficar estranho de interpretar e encontrar os possíveis problemas. Para tal, habilitamos a seguinte linha no tsconfig.json:
+```json
+"sourceMap": true
+```
+
+## Evitando o Any implicito 
+Para aumentar o nível de complexidade e sempre exigir que o código em TS admita tipos em sua construção, devemos adicionar a seguinte linha de código. 
+```json
+"noImplicitAny": true
+```
+
+## Os parâmetros "strictNullChecks", "noUnusedParameters" e "noUnusedLocals"
+- **"strictNullChecks"**: Quando strictNullChecks é false, null e undefined são efetivamente ignorados pela linguagem. Isso pode levar a erros inesperados em tempo de execução, já quando strictNullChecks for true, null e undefined têm seus próprios tipos distintos e você receberá um erro de tipo se tentar usá-los onde um valor concreto é esperado.
+
+- **"noUnusedParameters" e "noUnusedLocals"**: Dado uma declaração qualquer, caso essa variável não seja usada, o sistema irá reclamar que a variável declarada não é usada. 
+
+## Alterando o diretório de saída dos arquivos .js 
+Para uma melhor organização e caso seja desejável, podemos alterar a linha: 
+```json 
+"outDir": "./"
+```
+Que irá armazenar os arquivos .js em uma pasta específica
+
+## Alterando o arquivo de saída 
+Podemos gerar um arquivo para toda a compilação, que é o seguinte: 
+```json
+"outFile":"./"
+```
+
+<br><br>
+
+# <p align="center">Usando Classes para criar objetos</p>
+
+## Classes e Atributos 
+O TypeScript oferece suporte completo para a palavra-chave class introduzida no ES2015, assim como outros recursos da linguagem JavaScript, o TypeScript adiciona anotações de tipo e outras sintaxes para permitir que você expresse relacionamentos entre classes e outros tipos.
+
+Partindo do princípio em que você é familiarizado com a Orientação à objetos e o tratamento de classes, a construção de classes no TS não é muito diferente, conforme o seguinte: 
+
+```ts
+    class nomeClasse{
+        atributo: tipoAtributo
+
+        constructor(atributro: tipoAtributo){
+            this.atributo = atributo
+        }
+    }
+```
+Para instanciar uma classe, faz-se o seguinte: 
+```ts
+const instancia = new nomeClasse(atributo); 
+```
+<i>Veja o quão semelhante a construção e instanciamento de classes no TS em comparação à outras linguagens de programação.</i>
+
+### ❗Classes por padrão são public. ❗
+
+Uma vez que no construtor, inferimos o valor dos atributos desejados, ao instanciar a classe não precisamos declarar todos os atributos, conforme segue o exemplo: 
+```ts
+    class nomeClasse{
+        atributo: tipoAtributo
+
+        constructor(atributro: tipoAtributo = valor){
+            this.atributo = atributo
+        }
+    }
+
+    //Ao instanciar a classe não temos que informar o valor do atributo 
+    const instancia = new nomeClasse//Podendo omitir os ();
+```
+
+Maaaaaas.... Existe **Outra maneira de se criar uma classe**:
+
+```ts
+    class nomeClasse{
+        constructor(public atributo: tipoAtributo){
+
+        }
+    }
+```
+<i>
+Ao declarar no construtor que o atributo da classe construida é public, automaticamente esse atributo passa a fazer parte da classe, dispensando a declaração de atributos antes do método construtor.
+</i>
+
+<br>
+
+## Métodos de classes 
+Uma propriedade de função em uma classe é chamada de método, métodos podem ser usados com a mesma anotação que funções e construtores.
+
+Dada a seguinte necessidade de executar uma apresentação da minha classe, temos que fazer um método que retorna o desejado. 
+
+```ts
+    class nomeClasse{
+        constructor(public atributo: tipoAtributo){
+
+        }
+    }
+
+    apresenta(): String{ 
+        return `O valor do atributo é: ${this.atributo}`
+    }
+```
+E vale ressaltar que dentro desses métodos podemos colocar o que quisermos, condicionais, loops de repetições e etc. 
+
+## Modificadores de Acesso 
+ Na declaração dos atributos de uma classe, por padrão os mesmos irão receber por padrão a propriedade de visibilidade `public`, ou seja, elas são públicas e podem ser acessadas e alteradas tanto dentro da classe ou fora dela, não tendo um escopo de “segurança”.  
+
+ Para termos um certo controle sobre o acesso das propriedades das classes, temos os chamados modificadores de acesso, que são: 
+
+ `private:` Onde a propriedade pode ser acessada somente pela própria classe. 
+
+ ```ts
+ class Pessoa{
+	private nome: string = "TreinaWeb";
+	idade: number = 12
+	estaVivo: boolean = true;
+}
+
+let pessoa = new Pessoa();
+pessoa.nome = "Paulo"; //Utilizando private não podemos mais acessar desta forma
+```
+
+`protected:` Onde a propriedade pode ser acessada pela mesma classe e classes filhas mas não pode ser acessada por outras classes.
+
+```ts
+class Pessoa{
+	nome: string;
+	idade: number;
+	protected estaVivo: boolean;
+
+	constructor(nome: string, idade: number, estaVivo: boolean){
+    	this.nome = nome;
+    	this.idade = idade;
+    	this.estaVivo = estaVivo;
+	}
+}
+
+class PessoaFisica extends Pessoa{
+  cnpj: number;
+
+  constructor(nome: string, idade: number, estaVivo: boolean, cnpj: number){
+	super(nome, idade, estaVivo); //ao utilizar protected, podemos acessar por classes
+	this.cnpj = cnpj;             //filhas e pela própria classe;
+  }
+}
+```
+
+`readonly:`Propriedade pode ser acessada fora da classe, mas não é possível alterar o seu valor. 
+
+```ts
+class Pessoa{
+	nome: string = "TreinaWeb";
+	idade: number = 12
+	readonly estaVivo: boolean = true;
+}
+
+let pessoa = new Pessoa();
+console.log(pessoa.estaVivo); //a propriedade estaVivo será exibida com sucesso.
+pessoa.estaVivo = false; //Mas não podemos alterar essa propriedade.
+```
+
+## Herança 
+A palavra-chave `class`, introduzida no ECMAScript 2015, nos permite definir uma classe em JavaScript. O TypeScript também tem suporte ao paradigma. Um dos elementos da programação orientada à objetos é a herança de classes para reutilizar o código. No JavaScript tradicional, a herança é feita através de protótipos. Já com a palavra-chave class, podemos fazer a herança através da palavra-chave `extends`.
+
+O que foi dito acima é bastante normal para quem já está habituado com a orientação à objetos mas veja como é feito no código typescript.
+
+```ts 
+class Carro{ 
+    private velocidadeAtual: number = 0
+
+    constructor(public marca: string, public modelo: string, private velocidadeMaxima: number=200){
+        
+    }
+    private alterarVelocidade(delta:number) : number
+    {
+        const novaVelo = this.velocidadeAtual +delta; 
+        const velocidadeValida = novaVelo >=0 && novaVelo <=this.velocidadeMaxima
+    
+        if(velocidadeValida){
+            this.velocidadeAtual = novaVelo
+        }
+        else { 
+            this.velocidadeAtual = delta > 0 ? this.velocidadeMaxima : 0
+        }
+
+        return this.velocidadeAtual
+    }
+
+    public acelerar (): number {
+        return this.alterarVelocidade(5)
+    }
+
+    public frear(): number{
+        return this.alterarVelocidade(-5)
+    }
+}
+```
+<i>Dado uma classe qualquer com seus respectivos atributos, desejamos coletar suas propriedades e extender à uma outra classe</i>
+
+```ts
+class HyperCarro extends Carro{
+
+}
+```
+<i>Neste momento, eu não preciso replicar todo o código criado em carro</i>
+
+```ts 
+const huayra = new HyperCarro('Pagani', 'Huayra', 350);
+```
+<i>A classe acima que foi instanciada, herdou todas as propriedades (métodos e atributos)</i>
+
+- Agora, classes que estendem outras classes, podem sobrescrever os métodos assinalados pelas classes pais desde que os métodos de acesso sejam coerentes com o uso, no caso de nossa classe carro, o método `private alterarVelocidade` receberia a assinatura `protected`. 
+- Equanto estivermos na classe filha e quisermos executar o construtor da classe pai, deveremos chamar o método `super` e executá-lo, segue o exemplo: 
+```ts
+    constructor(marca: String, velocidademaxima: number){
+        super('Pagani', marca, velocidadeMaxima)
+    }
+```
+<i>Estamos sobrescrevendo o método construtor, podendo passar apenas 2 propriedades e a O.O. irá considerar o nome da marca como a inferida após o super.</i>
+
+
+## Getters & Setters 
+Para alterar atributos que possuém modificadores de acesso do tipo `private`, usamos os métodos `getters` e `setters` assim como em outros paradigmas O.O., porém a notação em typescript é bem diferente do que estamos acostumados. 
+
+```ts
+    class Pessoa{ 
+        private _idade; 
+        //usamos a notação com _ antes do nome do atributo para inferir que o dado informado é do tipo private. 
+
+        get idade(): number{ 
+            return this._idade;
+        }
+
+        set idade(idade: number){
+            this._idade = idade
+        }
+    }
+```
+<i> Para nós que estamos acostumados com alguns outros paradigmas de programação, o comum seria `getIdade` e `setIdade` mas veja que a sintaxe aqui em TS é diferente porém o princípio é o mesmo. </i>
+
+E o acesso aos métodos é feito da seguinte maneira: 
+
+```ts
+const pessoa1 = new Pessoa (); 
+pessoa1.idade = 25; 
+//Por mais que pareça que estamos acessando o atributo diretamente, estamos acessando o método set do mesmo.
 ```
