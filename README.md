@@ -6,7 +6,7 @@ Podemos considerar o Typescript como um potencializador da linguagem Javascript.
 
 Uma das grandes vantagens é que você pode usar recursos novos, porque o código vai ser copilado pra versão de JS desejada. 
 
-<p align="center"><img src="imgs/ts-js.png" width="400" /> </p>
+<p align="center"><img src="imgs/ts-js.png" width="500" /> </p>
 
 
 # <p align="center">Introdução e Instalação</p>
@@ -674,3 +674,250 @@ const pessoa1 = new Pessoa ();
 pessoa1.idade = 25; 
 //Por mais que pareça que estamos acessando o atributo diretamente, estamos acessando o método set do mesmo.
 ```
+
+## Membros estáticos 
+Atributos e métodos estáticos significam que os mesmos pertecem à classe e não à instância. 
+
+De uma forma tradicional, temos a seguinte Classe: 
+
+```ts
+class Matematica{
+    PI: number = 3.141516
+
+
+    areaCirc(raio: number): number{ 
+        return this.PI * raio * raio
+    }
+}
+
+const m1 = new Matematica(); 
+console.log(m1.areaCirc(4));
+```
+- Caso seja necessário calcular n áreas dos círculos desejados, temos de instanciar n objetos referentes à classe, portanto podemos atribuir ao método `areaCirc` e ao atributo `PI` o identificador static, onde os métodos e atributos pertencerão a classe e não à instância. Portanto,a classe acima se torna a seguinte: 
+```ts
+class Matematica{
+    static PI: number = 3.141516
+
+
+    static areaCirc(raio: number): number{ 
+        return this.PI * raio * raio
+    }
+}
+
+raio = n //Valor n qualquer
+Matematica.areaCirc(raio) // Calcula a área com o raio sem precisar de instanciar a classe de Matematica 
+```
+## Classe abstrata 
+A classe abstrata enumera características genéricas do modelo, mas não as implementa. A classe abstrata obriga subclasses a implementarem funcionalidades abstratas previstas em seu corpo. Para isto, cada subclasse se utiliza de seus detalhes particulares.
+
+Tudo o que definimos até então, foi passado em classes concretas, a classe abstrata é um conceito que não é existente no JS mas foi trago ao TS. 
+
+```ts
+abstract class X { 
+    y(a: number) number{
+
+    }
+}
+```
+<i>A classe abstrata `X` possuí um método `y` que tem como parâmetro um número `a` e retorna um `number`. Caso uma outra classe qualquer herde a classe `X`, ela obrigatóriamente irá herdar o método `y`</i>
+
+## Construtor privado e Singleton 
+Uma outra possibilidade, é a implementação de padrão de projeto chamada Singleton, onde é um controle de como você instancia um determinado projeto, transformando um construtor privado. 
+
+Como o nome indica, uma classe é considerada singleton se ela limitar o número de objetos dessa classe a um. Ou seja, não podemos ter mais de um único objeto para essas classes.
+
+<br><br>
+
+# <p align="center">Módulos e Namespaces</p>
+
+## Namespaces
+Os Namespaces são uma forma específica do TypeScript para organizar código. Namespaces são simplesmente objetos JavaScript nomeados no namespace global. Isso torna os namespaces uma construção muito simples de usar. 
+
+Veja o exemplo a seguir: 
+```ts
+const PI = 3.14 
+
+function areaCircunferencia(raio:number): number{
+    return PI*Math.pow(raio,2)
+}
+
+function areaRetangulo(base: number, altura:number):number{
+    return base * altura
+}
+
+console.log(areaCircunferencia(10))
+console.log(areaRetangulo(10,5))
+```
+
+Existe uma maneira de simplificar o código acima, onde podemos organizar a esquematização acima da seguinte maneira: 
+```ts
+namespace Areas{
+    const PI = 3.14 
+
+    export function Circunferencia(raio:number): number{
+    //Usamos o export para dizemos que a função no namespacing pode ser exportada    
+        return PI*Math.pow(raio,2)
+    }
+    
+    export function Retangulo(base: number, altura:number):number{
+        return base * altura
+    }
+}
+
+console.log(Areas.Circunferencia(10))
+console.log(Areas.Retangulo(10,5))
+```
+
+Onde inserimos todo o código em um lugar reservado, podendo até alterar as constantes fora do contexto sem alterar o valor dentro no namespacing. 
+
+- Caso haja a necessidade, podemos escrever os namespaces de **maneira aninhada**, caso queiramos aninhar o conteúdo do código acima de maneira que tenhamos as funções relativas à geometria. 
+
+```ts
+namespace Geometria{
+    
+    export namespace Areas{
+    //Lembrando de usar o export
+    const PI = 3.14 
+
+    export function Circunferencia(raio:number): number{
+    //Usamos o export para dizemos que a função no namespacing pode ser exportada    
+        return PI*Math.pow(raio,2)
+    }
+    
+    export function Retangulo(base: number, altura:number):number{
+        return base * altura
+    }
+    }
+}
+
+console.log(Geometria.Areas.Circunferencia(10))
+console.log(Geometria.Areas.Retangulo(10,5))
+```
+
+## Namespaces em múltiplos arquivos 
+Caso seja necessário fazer a separação dos arquivos dos namespaces, usamos o `tsc` para compilar em só um código: 
+```
+tsc -w --outFile arquivoreferenciado.js arquivoasercompilado.ts outroarquivo.ts
+``` 
+## Referenciando os arquivos 
+Outra maneira de referenciarmos os arquivos sem utilizar o `tsc -w --outFile` é através da seguinte linha de código: 
+
+```ts
+///<reference path="geometriaRet.ts"/>
+```
+
+E no console referenciando apenas o arquivo principal 
+
+```
+tsc -w --outFile arquivoreferenciado.js arquivoasercompilado.ts 
+``` 
+
+## Módulos 
+Módulos por padrão não são interpretados pelos navegadores, no backend é comum o uso de módulos porém podemos usar no typescript 
+
+**Módulos podem conter código e declarações.**
+
+Os módulos também dependem de um carregador de módulos (como CommonJs/Require.js) ou um ambiente que suporta módulos ES. Módulos fornecem melhor reutilização de código, isolamento mais forte e melhor suporte a ferramentas para empacotamento. Também é importante notar que, para aplicações Node.js, moódulos são o padrão e nós recomendamos módulos em vez de namespaces em códigos modernos.
+
+- Para a importação de módulos, utilizamos a seguinte linha de comando no código: 
+```ts
+import {metodoImportado} from "./arquivo";
+```
+O código não irá apresentar nenhum problema no ponto de vista do TS porém quando convertido para JS apresentará problema pois o mesmo não oferece suporte para módulos. 
+
+Agora, pra fazer os módulos rodarem corretamente nos browsers, devemos usar o **SystemJS** 
+<p>
+
+- Para instalar o SystemJS devemos instalar seguinte o módulo do node: 
+
+```
+npm i -s systemjs@0.21.5
+```
+- Além de instalar, o node já cita o systemjs nas dependências 
+</p>
+
+Usando o comando `default` após a declaração de `export` faz com que a declaração da importação seja diferente. 
+
+```ts
+import metodoImportado from "./caminho";
+```
+
+<p align="center"><img src="imgs/modulosxnamespaces.png" width="500"/> </p>
+
+<br><br>
+
+# <p align="center">Interfaces</p>
+
+Interfaces, nas palavras mais simples, descrevem a estrutura do objeto, o que significa que descreve como o objeto deve se parecer. Dentro TypeScript, podemos trabalhar com “Interfaces”. No TypeScript, uma interface contém apenas a definição de métodos e propriedades, não sua implementação. É a funcionalidade da classe que realiza a conexão entre a interface fornecendo a conexão com todos os parâmetros da interface.
+
+A interface é um recurso muito utilizado em Java, bem como na maioria das linguagens orientadas a objeto, para “obrigar” a um determinado grupo de classes a ter métodos ou propriedades em comum para existir em um determinado contexto, contudo os métodos podem ser implementados em cada classe de uma maneira diferente. Pode-se dizer, a grosso modo, que uma interface é um contrato que quando assumido por uma classe deve ser implementado.
+
+## Aplicação de Interface em typescript: 
+```ts
+interface humano{
+    nome: string //Atributo obrigatório
+    idade?: number // Atributo opcional
+    [prop: string]: any //Atributo variável porém obrigatório
+
+    saudar(sobrenome: string):void //Método obrigatório
+}
+```
+<i>A classe que implementar a interface acima, consequentemente tem que implementar os métodos e atributos sinalizados.</i>
+
+## Implementação de interface em Classes 
+
+A implementação de interfaces nas classes criadas em typescript são muito semelhantes as que são criadas em Java e outras linguagens orientadas a objetos, é simples e utilizando a palavra `extends`.
+```ts
+class Usuario implements humano{
+    nome: string = ''
+    idade?: number | undefined
+    saudar(sobrenome: string): void {
+        console.log('Ola meu nome é ' + this.nome + sobrenome)
+    }    
+}
+```
+
+## Interfaces do tipo função 
+Podemos implementar uma interface em que o seu contrato com quem for implementar, sejam funções, conforme segue o exemplo: 
+
+```ts
+interface implementaCalculo{
+    (a: number, b:number): number
+}
+```
+<i>Qualquer tipo de propriedade (classe, tipo, etc) que implementar a interface acima tem que por obrigação ter um método em que a entrada são duas variáveis do tipo `number` e retorna um `number`</i>
+
+## Herança e Interfaces 
+
+Podemos aplicar o conceito de herança com interfaces também, sendo sua notação a seguinte: 
+
+```ts
+interface A {
+    a(): void 
+}
+
+interface B{
+    b(): void
+}
+
+interface ABC extends A, B{ 
+    c(): void 
+}
+
+class RealA implements A{
+    a(): void {}
+}
+
+class RealAB implements A,B {
+    a(): void {}
+    b(): void {}
+}
+
+class realABC implements ABC{
+    c(): void {}
+    a(): void {}
+    b(): void {}
+
+}
+```
+

@@ -87,3 +87,49 @@ const carro1 = new Carro("Toyota", "Supra", 380);
  
  Array(50).fill(0).forEach(()=> carro1.acelerar());
  console.log(carro1.acelerar());    
+
+ class Matematica{
+    static PI: number = 3.141516
+
+
+    static areaCirc(raio: number): number{ 
+        return this.PI * raio * raio
+    }
+}
+
+//Classe abstrata
+abstract class Calculo{
+    protected resultado: number = 0
+
+    abstract executar(...numeros: number[]): void
+
+    getResultado(): number{
+        return this.resultado
+    }
+
+}
+
+
+class Soma extends Calculo{
+    executar(...numeros: number[]): void {
+        this.resultado = numeros.reduce((t,a)=>t+a)
+    }
+    
+}
+
+class Multiplicacao extends Calculo{
+    executar(...numeros: number[]): void {
+        this.resultado = numeros.reduce((t,a)=>t*a)
+    }
+    
+}
+
+
+let c1 = new Soma();
+c1.executar(2,3,4,5)
+console.log(c1.getResultado());
+
+let c2 = new Multiplicacao();
+c2.executar(2,3,4,5);
+console.log(c2.getResultado());
+
