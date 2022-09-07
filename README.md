@@ -917,7 +917,99 @@ class realABC implements ABC{
     c(): void {}
     a(): void {}
     b(): void {}
-
 }
 ```
 
+# <p align="center">Generics</p>
+
+Uma parte importante da engenharia de software é construir componentes que não apenas tenham APIs bem definidas e consistentes, mas também sejam reutilizáveis. Componentes que são capazes de trabalhar com os dados de hoje e com os dados de amanhã fornecerão os recursos mais flexíveis para construir grandes sistemas de software.
+
+Em linguagens como C# e Java, uma das principais ferramentas da caixa de ferramentas para criar componentes reutilizáveis ​​são os genéricos, ou seja, poder criar um componente que pode funcionar em vários tipos ao invés de um único. Isso permite que os usuários consumam esses componentes e usem seus próprios tipos.
+
+Para trabalhar com tipos genéricos em funções no typescript, utilizamos a seguinte notação: 
+```ts
+function nomeFuncao<T>(objeto: T): T{
+    return objeto
+}
+//A função nomeFuncao recebe entre <> a letra T que indica que heverá um certo tipo de objeto que será trabalhado, esse tipo T será parâmetro de entrada e tipo de saída também.
+```
+
+Aplicando os genéricos: 
+
+```ts
+function echo<T>(objeto: T): T{
+    return objeto
+}
+console.log(echo('Gabriel').length)
+console.log(echo(18).lenght)
+// O sistema irá reclamar pois identifica que a propriedade lenght não existe para o tipo number
+```
+
+Seja a partir da inferência: 
+```ts
+echo('Gabriel').lenght //Inferindo que o tipo é uma string
+```
+
+Ou seja a partir da notação do próprio generics: 
+```ts
+echo<number>(21)//Na notação informo que a função receberá um tipo number
+```
+
+**Nota:** A notação generics vem muito mais de quem está construindo algo que é genérico, que em algum momento irá ser especificado o tipo. 
+
+Exemplos de criações com generics: 
+```ts
+function imprimir<T>(args: T[]){
+    args.forEach(elemento => console.log(elemento))
+}
+
+imprimir([1,2,3])
+imprimir<number>([1,2,3])
+imprimir<string>(['Gabriel','Felipe','Joao'])
+
+type Aluno = {nome: string, idade: number}
+imprimir<Aluno>([
+    {nome: 'Fulano', idade: 22},
+    {nome: 'Cicrano', idade: 25}
+])
+```
+
+## Criando classes com Generics 
+
+Outro uso importante de Generics é associar o seu uso com classes.
+
+Tendo em vista o seguinte problema: 
+```ts
+class OperacaoBinaria{
+    constructor(public operando1: any, public operando2: any){
+
+        }
+    executar (){
+        return this.operando1 + this.operando2
+    }
+}
+console.log(new OperacaoBinaria('Bom ', 'Dia').executar())
+//Console mostra: Bom Dia
+console.log(new OperacaoBinaria({},{}).executar())
+//Console mostra:[object Object][object Object]
+```
+<i>Se nota que a construção da classe é feita de maneira genérica pois utiliza do tipo any e isso pode gerar algum tipo de problema pois na segunda operação onde construimos a classe com 2 objetos, o método os transforma para string e os concatena e isso obviamente não é o que queremos</i>
+
+
+Para solucionar o problema acima, devemos transformar a classe `OperacaoBinaria` em uma **classe abstrata** e então extendê-la da maneira que precisarmos: 
+```ts
+abstract class OperacaoBinaria<T, R>{ //Indicamos que a classe terá 2 tipos genéricos.
+    constructor(public operando1: T, public operando2: T){//Seu construtor indicando que a classe que extender terá 2 atributos do tipo T
+
+        }
+    abstract executar (): R // O método executar deve retornar o objeto do tipo R
+}
+
+class SomaBinaria extends OperacaoBinaria<number, number>{
+//A classe SomaBinaria herda a classe abstrata OperacaoBinaria e em sua declaração, inferimos que os tipos serão number e number
+    executar(): number {
+        return this.operando1 + this.operando2
+        //O método executar retorna um tipo R cujo valor é a soma dos dois operandos. 
+    }  
+}
+```
