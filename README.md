@@ -1013,3 +1013,51 @@ class SomaBinaria extends OperacaoBinaria<number, number>{
     }  
 }
 ```
+<br><br>
+
+# <p align="center">Decorators</p>
+Um Decorator é um tipo especial de declaração que pode ser anexada a uma declaração de classe, método, acessador, propriedade ou parâmetro, ou seja uma declaração especial para adicionar funcionalidades extras a uma declaração de classe, método, acessador, propriedade ou parâmetro. 
+
+Como é um recurso especial, devemos habilitá-lo no tsconfig.json: 
+```json 
+"experimentalDecorators": true 
+```
+
+Por exemplo, dado o decorator `@sealed` devemos escrever a função `sealed` conforme a seguinte: 
+```ts
+function sealed(target) {
+  // fazer alguma coisa com 'target'...
+}
+```
+
+## Decorator Factories 
+Se quisermos personalizar como um decorator é aplicado a uma declaração, podemos escrever um decorator factory. Um decorator factory é simplesmente uma função que retorna a expressão que será chamada pelo decorator em tempo de execução.
+
+Um exemplo de decorator factory: 
+```ts
+function color(value: string) {
+  // Acima, o decorator factory, ele retorna a seguinte função:
+  return function (target) {
+    // Acima o decorator
+    // que faz algo com value e target...
+  };
+}
+``` 
+
+## Class decorator 
+Um decorator para classe deve ser declarado antes da declaração da classe, esse decorator recebe um único parâmetro que é o construtor da classe alvo.
+```ts
+function setApiVersion(constructor) {
+  //O decorator setApiVersion recebe o construtor da classe como parâmetro
+  constructor.api = '0.0.1';
+  //É acessado o atributo api desta classe e então atribuido o valor '0.0.1'
+}
+
+@setApiVersion
+//Chamada do decorator para a classe Wizard
+class Wizard {}
+
+console.log(new Wizard()); // { [Function: Wizard] api: '0.0.1' }
+```
+
+<br><br>
